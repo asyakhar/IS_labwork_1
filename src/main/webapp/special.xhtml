@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/layout.xhtml">
+
+    <ui:define name="content">
+        <h:form id="specialForm">
+            <p:panel header="Спецоперации" style="margin:20px;">
+
+                <!-- Удаление по Climate -->
+                <h:outputLabel value="Удалить один город с климатом:"/>
+                <p:selectOneMenu value="#{specialBean.climate}">
+                    <f:selectItems value="#{climateBean.values}" var="cl" itemLabel="#{cl}" itemValue="#{cl}"/>
+                </p:selectOneMenu>
+                <p:commandButton value="Удалить" action="#{specialBean.deleteByClimate}" update="specialForm"/>
+
+                <hr/>
+
+                <!-- Сумма высот -->
+                <p:commandButton value="Посчитать сумму высот" action="#{specialBean.calculateSum}" update="specialForm"/>
+                <h:outputText value="Сумма: #{specialBean.sumMeters}" rendered="#{not empty specialBean.sumMeters}"/>
+
+                <hr/>
+
+                <!-- Поиск по префиксу -->
+                <h:outputLabel value="Найти города, имя начинается с:"/>
+                <p:inputText value="#{specialBean.namePrefix}"/>
+                <p:commandButton value="Поиск" action="#{specialBean.searchByPrefix}" update="specialForm"/>
+                <p:dataTable value="#{specialBean.foundCities}" var="c" rendered="#{not empty specialBean.foundCities}">
+                    <p:column headerText="ID">#{c.id}</p:column>
+                    <p:column headerText="Название">#{c.name}</p:column>
+                </p:dataTable>
+
+                <hr/>
+
+                <!-- Расстояния -->
+                <p:commandButton value="Дистанция (0,0,0 -> min population)"
+                                 action="#{specialBean.calcZeroMin}" update="specialForm"/>
+                <h:outputText value="Результат: #{specialBean.distanceZeroMin}"
+                              rendered="#{not empty specialBean.distanceZeroMin}"/>
+
+                <p:commandButton value="Дистанция (max pop -> min pop)"
+                                 action="#{specialBean.calcMaxMin}" update="specialForm"/>
+                <h:outputText value="Результат: #{specialBean.distanceMaxMin}"
+                              rendered="#{not empty specialBean.distanceMaxMin}"/>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

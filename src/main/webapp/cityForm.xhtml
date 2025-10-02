@@ -1,0 +1,199 @@
+<ui:composition template="/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="content">
+        <h1>#{cityBean.selectedCity.id == null ? 'Создание' : 'Редактирование'} города</h1>
+
+        <h:form id="cityForm">
+            <p:messages id="messages" showDetail="true" autoUpdate="true" />
+
+            <!-- Основная информация о городе - ПЕРВАЯ -->
+            <p:panel header="Основная информация о городе" style="margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Название города -->
+                    <div>
+                        <h:outputLabel for="name" value="Название города:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:inputText id="name" value="#{cityBean.selectedCity.name}"
+                                     required="true" requiredMessage="Название обязательно"
+                                     placeholder="Введите название города"
+                                     style="width: 100%">
+                            <f:validateLength minimum="1"/>
+                        </p:inputText>
+                    </div>
+
+                    <!-- Площадь -->
+                    <div>
+                        <h:outputLabel for="area" value="Площадь (км²):*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:inputNumber id="area" value="#{cityBean.selectedCity.area}" required="true"
+                                       minValue="0.1" decimalPlaces="2" requiredMessage="Площадь обязательна"
+                                       placeholder="0.00"
+                                       style="width: 100%"/>
+                    </div>
+
+                    <!-- Население -->
+                    <div>
+                        <h:outputLabel for="population" value="Население:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:inputNumber id="population" value="#{cityBean.selectedCity.population}" required="true"
+                                       minValue="1" requiredMessage="Население обязательно"
+                                       placeholder="0"
+                                       style="width: 100%"/>
+                    </div>
+
+                    <!-- Часовой пояс -->
+                    <div>
+                        <h:outputLabel for="timezone" value="Часовой пояс:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:inputNumber id="timezone" value="#{cityBean.selectedCity.timezone}" required="true"
+                                       minValue="-12" maxValue="15" requiredMessage="Часовой пояс обязателен"
+                                       placeholder="от -12 до +15"
+                                       style="width: 100%"/>
+                    </div>
+
+                    <!-- Климат -->
+                    <div>
+                        <h:outputLabel for="climate" value="Климат:" style="display: block; margin-bottom: 5px;"/>
+                        <p:selectOneMenu id="climate" value="#{cityBean.selectedCity.climate}"
+                                         style="width: 100%">
+                            <f:selectItem itemLabel="-- выберите климат --" itemValue="#{null}"/>
+                            <f:selectItems value="#{climateBean.values}" var="c" itemLabel="#{c}" itemValue="#{c}"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <!-- Уровень жизни -->
+                    <div>
+                        <h:outputLabel for="standardOfLiving" value="Уровень жизни:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:selectOneMenu id="standardOfLiving" value="#{cityBean.selectedCity.standardOfLiving}" required="true"
+                                         requiredMessage="Уровень жизни обязателен"
+                                         style="width: 100%">
+                            <f:selectItem itemLabel="-- выберите уровень жизни --" itemValue="#{null}"/>
+                            <f:selectItems value="#{standardOfLivingBean.values}" var="s" itemLabel="#{s}" itemValue="#{s}"/>
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+            </p:panel>
+
+            <!-- Информация о губернаторе - ВТОРАЯ -->
+            <p:panel header="Информация о губернаторе" style="margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Тип губернатора -->
+                    <div>
+                        <h:outputLabel for="governorType" value="Тип губернатора:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:selectOneRadio id="governorType" value="#{cityBean.createNewGovernor}">
+                            <f:selectItem itemLabel="Создать нового" itemValue="true" />
+                            <f:selectItem itemLabel="Выбрать существующего" itemValue="false" />
+                            <p:ajax update="newGovernorPanel existingGovernorPanel" />
+                        </p:selectOneRadio>
+                    </div>
+
+                    <!-- Поля для нового губернатора -->
+                    <p:outputPanel id="newGovernorPanel">
+                        <h:panelGroup rendered="#{cityBean.createNewGovernor}">
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div>
+                                    <h:outputLabel for="governorName" value="Имя губернатора:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                                    <p:inputText id="governorName" value="#{cityBean.newGovernor.name}"
+                                                 required="true" requiredMessage="Имя губернатора обязательно"
+                                                 placeholder="Введите имя губернатора"
+                                                 style="width: 100%">
+                                        <f:validateLength minimum="1"/>
+                                    </p:inputText>
+                                </div>
+
+                                <div>
+                                    <h:outputLabel for="governorBirthday" value="Дата рождения губернатора:" style="display: block; margin-bottom: 5px;"/>
+                                    <p:calendar id="governorBirthday" value="#{cityBean.newGovernor.birthday}"
+                                                pattern="dd.MM.yyyy" locale="ru"
+                                                placeholder="Выберите дату"
+                                                style="width: 100%"/>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </p:outputPanel>
+
+                    <!-- Выбор существующего губернатора -->
+                    <p:outputPanel id="existingGovernorPanel">
+                        <h:panelGroup rendered="#{not cityBean.createNewGovernor}">
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div>
+                                    <h:outputLabel for="selectedGovernor" value="Выберите губернатора:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                                    <p:selectOneMenu id="selectedGovernor" value="#{cityBean.selectedGovernorId}"
+                                                     required="true" requiredMessage="Выберите губернатора"
+                                                     style="width: 100%">
+                                        <f:selectItem itemLabel="-- выберите губернатора --" itemValue="#{null}"/>
+                                        <f:selectItems value="#{humanBean.allHumans}" var="human"
+                                                       itemLabel="#{human.name} (ID: #{human.id})" itemValue="#{human.id}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </p:outputPanel>
+                </div>
+            </p:panel>
+
+            <!-- Географические данные - ТРЕТЬЯ -->
+            <p:panel header="Географические данные" style="margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Координата X -->
+                    <div>
+                        <h:outputLabel for="coordX" value="Координата X:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:inputNumber id="coordX" value="#{cityBean.selectedCity.coordinates.x}" required="true"
+                                       requiredMessage="Координата X обязательна"
+                                       placeholder="0.00"
+                                       style="width: 100%"/>
+                    </div>
+
+                    <!-- Координата Y -->
+                    <div>
+                        <h:outputLabel for="coordY" value="Координата Y:*" style="font-weight: bold; display: block; margin-bottom: 5px;"/>
+                        <p:inputNumber id="coordY" value="#{cityBean.selectedCity.coordinates.y}" required="true"
+                                       minValue="-39.999" requiredMessage="Координата Y обязательна и должна быть > -40"
+                                       placeholder="должна быть > -40"
+                                       style="width: 100%"/>
+                    </div>
+
+                    <!-- Столица -->
+                    <div>
+                        <h:outputLabel for="capital" value="Столица:" style="display: block; margin-bottom: 5px;"/>
+                        <p:selectOneRadio id="capital" value="#{cityBean.selectedCity.capital}">
+                            <f:selectItem itemLabel="Да" itemValue="true" />
+                            <f:selectItem itemLabel="Нет" itemValue="false" />
+                        </p:selectOneRadio>
+                    </div>
+
+                    <!-- Высота над уровнем моря -->
+                    <div>
+                        <h:outputLabel for="metersAboveSeaLevel" value="Высота над уровнем моря (м):" style="display: block; margin-bottom: 5px;"/>
+                        <p:inputNumber id="metersAboveSeaLevel" value="#{cityBean.selectedCity.metersAboveSeaLevel}"
+                                       minValue="0" decimalPlaces="0"
+                                       placeholder="0"
+                                       style="width: 100%"/>
+                    </div>
+
+                    <!-- Дата основания -->
+                    <div>
+                        <h:outputLabel for="establishmentDate" value="Дата основания:" style="display: block; margin-bottom: 5px;"/>
+                        <p:calendar id="establishmentDate" value="#{cityBean.selectedCity.establishmentDate}"
+                                    pattern="dd.MM.yyyy" locale="ru"
+                                    placeholder="Выберите дату"
+                                    style="width: 100%"/>
+                    </div>
+                </div>
+            </p:panel>
+
+            <!-- Кнопки действий -->
+            <div style="text-align: left; margin-top: 20px;">
+                <p:commandButton value="Сохранить" action="#{cityBean.saveCity}"
+                                 update="messages" process="@form"
+                                 icon="pi pi-check"
+                                 styleClass="ui-button-success"
+                                 style="margin-right: 10px;"/>
+                <p:button value="Отмена" outcome="/cityTable.xhtml"
+                          icon="pi pi-times"
+                          styleClass="ui-button-secondary"/>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

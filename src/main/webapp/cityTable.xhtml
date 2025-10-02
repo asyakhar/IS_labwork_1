@@ -1,0 +1,172 @@
+<ui:composition template="/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="content">
+        <h1>Список городов</h1>
+
+        <h:form id="cityTableForm">
+            <p:panel>
+                <!-- Панель инструментов -->
+                <p:toolbar style="margin-bottom: 15px;">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Добавить город"
+                                         action="#{cityBean.newCity}"
+                                         icon="pi pi-plus"
+                                         styleClass="ui-button-success" />
+                    </p:toolbarGroup>
+
+                    <p:toolbarGroup align="right">
+                        <p:commandButton value="Очистить фильтры"
+                                         action="#{cityTableBean.clearFilters}"
+                                         icon="pi pi-filter-slash"
+                                         styleClass="ui-button-secondary"
+                                         update="citiesTable" />
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <!-- Таблица с фильтрацией, сортировкой и пагинацией -->
+                <p:dataTable id="citiesTable"
+                             value="#{cityTableBean.lazyModel}"
+                             var="city"
+                             paginator="true"
+                             rows="10"
+                             rowsPerPageTemplate="5,10,15,20"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="Показано {startRecord} - {endRecord} из {totalRecords} городов"
+                             lazy="true"
+                             sortBy="#{city.id}"
+                             sortOrder="ascending"
+                             filteredValue="#{cityTableBean.filteredCities}"
+                             widgetVar="citiesTableWidget"
+                             responsiveLayout="scroll"
+                             style="width:100%"
+                             emptyMessage="Города не найдены">
+
+                    <!-- Столбец ID с фильтрацией -->
+                    <p:column headerText="ID"
+                              sortBy="#{city.id}"
+                              filterBy="#{city.id}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{city.id}" />
+                    </p:column>
+
+                    <!-- Столбец Название с фильтрацией по неполному совпадению -->
+                    <p:column headerText="Название"
+                              sortBy="#{city.name}"
+                              filterBy="#{city.name}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{city.name}" />
+                    </p:column>
+
+                    <!-- Столбец Координаты -->
+                    <p:column headerText="Координаты"
+                              sortBy="#{city.coordinates.x}">
+                        <h:outputText value="(#{city.coordinates.x}, #{city.coordinates.y})" />
+                    </p:column>
+
+                    <!-- Столбец Население -->
+                    <p:column headerText="Население"
+                              sortBy="#{city.population}"
+                              filterBy="#{city.population}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{city.population}">
+                            <f:convertNumber type="number" />
+                        </h:outputText>
+                    </p:column>
+
+                    <!-- Столбец Площадь -->
+                    <p:column headerText="Площадь"
+                              sortBy="#{city.area}"
+                              filterBy="#{city.area}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{city.area}">
+                            <f:convertNumber maxFractionDigits="2" />
+                        </h:outputText>
+                    </p:column>
+
+                    <!-- Столбец Дата создания -->
+                    <p:column headerText="Дата создания" sortBy="#{city.creationDate}">
+                        <h:outputText value="#{city.creationDateString}" />
+                    </p:column>
+
+                    <!-- Столбец Часовой пояс -->
+                    <p:column headerText="Часовой пояс"
+                              sortBy="#{city.timezone}"
+                              filterBy="#{city.timezone}"
+                              filterMatchMode="contains">
+                        <h:outputText value="UTC#{city.timezone >= 0 ? '+' : ''}#{city.timezone}" />
+                    </p:column>
+
+                    <!-- Столбец Климат с фильтрацией -->
+                    <p:column headerText="Климат"
+                              sortBy="#{city.climate}"
+                              filterBy="#{city.climate}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{city.climate}" />
+                    </p:column>
+
+                    <!-- Столбец Уровень жизни -->
+                    <p:column headerText="Уровень жизни"
+                              sortBy="#{city.standardOfLiving}">
+                        <h:outputText value="#{city.standardOfLiving}" />
+                    </p:column>
+
+                    <!-- Столбец Губернатор с фильтрацией -->
+                    <p:column headerText="Губернатор"
+                              sortBy="#{city.governor.name}"
+                              filterBy="#{city.governor.name}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{city.governor.name}" />
+                    </p:column>
+
+                    <!-- Столбец Столица -->
+                    <p:column headerText="Столица"
+                              sortBy="#{city.capital}">
+                        <h:outputText value="#{city.capital ? 'Да' : 'Нет'}" />
+                    </p:column>
+
+                    <!-- Столбец Высота над уровнем моря -->
+                    <p:column headerText="Высота над ур. моря"
+                              sortBy="#{city.metersAboveSeaLevel}"
+                              filterBy="#{city.metersAboveSeaLevel}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{city.metersAboveSeaLevel}">
+                            <f:convertNumber type="number" />
+                        </h:outputText>
+                    </p:column>
+
+                    <!-- Действия -->
+                    <p:column headerText="Действия" style="width:180px" exportable="false">
+                        <p:button value="Просмотр"
+                                  outcome="/cityView.xhtml"
+                                  icon="pi pi-eye"
+                                  styleClass="ui-button-secondary">
+                            <f:param name="id" value="#{city.id}" />
+                        </p:button>
+
+                        <p:commandButton value="Редактировать"
+                                         action="#{cityBean.editCity(city)}"
+                                         icon="pi pi-pencil"
+                                         styleClass="ui-button-info"
+                                         update=":cityTableForm">
+                            <f:setPropertyActionListener target="#{cityBean.selectedCity}" value="#{city}" />
+                        </p:commandButton>
+
+                        <p:commandButton value="Удалить"
+                                         action="#{cityBean.deleteCityWithRelations(city)}"
+                                         icon="pi pi-trash"
+                                         styleClass="ui-button-danger"
+                                         update=":cityTableForm:citiesTable"
+                                         onclick="return confirm('Удалить город #{city.name} и связанные объекты?');">
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,174 @@
+<ui:composition template="/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <f:metadata>
+        <f:viewParam name="id" value="#{cityViewBean.cityId}"/>
+    </f:metadata>
+
+    <ui:define name="content">
+        <h1>Информация о городе</h1>
+
+        <h:form id="cityViewForm">
+
+            <!-- Когда город загружен -->
+            <h:panelGroup rendered="#{cityViewBean.cityLoaded}">
+                <h2>Город: #{cityViewBean.city.name}</h2>
+
+                <!-- Основная информация -->
+                <p:panel header="Основная информация">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel value="ID:"/>
+                        <h:outputText value="#{cityViewBean.city.id}"/>
+
+                        <h:outputLabel value="Название:"/>
+                        <h:outputText value="#{cityViewBean.city.name}"/>
+
+                        <h:outputLabel value="Площадь:"/>
+                        <h:outputText value="#{cityViewBean.city.area}">
+                            <f:convertNumber maxFractionDigits="2"/>
+                        </h:outputText>
+
+                        <h:outputLabel value="Население:"/>
+                        <h:outputText value="#{cityViewBean.city.population}"/>
+
+                        <h:outputLabel value="Дата создания:"/>
+                        <h:outputText value="#{cityViewBean.city.creationDateString}"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <!-- Детальная информация о координатах -->
+                <p:panel header="Детальная информация о координатах" style="margin-top: 20px;">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel value="ID координат:"/>
+                        <h:outputText value="#{cityViewBean.city.coordinates.id}"/>
+
+                        <h:outputLabel value="Координата X:"/>
+                        <h:outputText value="#{cityViewBean.city.coordinates.x}"/>
+
+                        <h:outputLabel value="Координата Y:"/>
+                        <h:outputText value="#{cityViewBean.city.coordinates.y}"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <!-- Детальная информация о губернаторе -->
+                <p:panel header="Детальная информация о губернаторе" style="margin-top: 20px;">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel value="ID губернатора:"/>
+                        <h:outputText value="#{cityViewBean.city.governor.id}"/>
+
+                        <h:outputLabel value="Имя губернатора:"/>
+                        <h:outputText value="#{cityViewBean.city.governor.name}"/>
+
+                        <h:outputLabel value="Дата рождения:"/>
+                        <h:outputText value="#{cityViewBean.city.governor.birthdayString}"/>
+
+                        <h:outputLabel value="Возраст:"/>
+                        <h:outputText value="#{cityViewBean.calculateGovernorAge()} лет"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <!-- Другие города с этим же губернатором -->
+                <p:panel header="Другие города с этим же губернатором"
+                         style="margin-top: 20px;"
+                         rendered="#{cityViewBean.hasOtherCitiesWithSameGovernor}">
+                    <p:dataTable value="#{cityViewBean.otherCitiesWithSameGovernor}" var="otherCity"
+                                 emptyMessage="Нет других городов с этим губернатором"
+                                 style="width: 100%">
+                        <p:column headerText="ID">
+                            <h:outputText value="#{otherCity.id}"/>
+                        </p:column>
+                        <p:column headerText="Название">
+                            <h:outputText value="#{otherCity.name}"/>
+                        </p:column>
+                        <p:column headerText="Население">
+                            <h:outputText value="#{otherCity.population}"/>
+                        </p:column>
+                        <p:column headerText="Площадь">
+                            <h:outputText value="#{otherCity.area}">
+                                <f:convertNumber maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Действия" style="width: 120px">
+                            <p:button value="Просмотр" outcome="/cityView.xhtml" icon="pi pi-eye"
+                                      styleClass="ui-button-secondary">
+                                <f:param name="id" value="#{otherCity.id}"/>
+                            </p:button>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+
+                <!-- Географические данные -->
+                <p:panel header="Географические данные" style="margin-top: 20px;">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel value="Высота над ур. моря:"/>
+                        <h:outputText value="#{cityViewBean.city.metersAboveSeaLevel} м"
+                                      rendered="#{cityViewBean.city.metersAboveSeaLevel != null}"/>
+                        <h:outputText value="Не указана"
+                                      rendered="#{cityViewBean.city.metersAboveSeaLevel == null}"/>
+
+                        <h:outputLabel value="Часовой пояс:"/>
+                        <h:outputText value="#{cityViewBean.city.timezoneString}"/>
+
+                        <h:outputLabel value="Климат:"/>
+                        <h:outputText value="#{cityViewBean.city.climateString}"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <!-- Социально-экономические данные -->
+                <p:panel header="Социально-экономические данные" style="margin-top: 20px;">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel value="Уровень жизни:"/>
+                        <h:outputText value="#{cityViewBean.city.standardOfLivingString}"/>
+
+                        <h:outputLabel value="Столица:"/>
+                        <h:outputText value="#{cityViewBean.city.capitalString}"/>
+
+                        <h:outputLabel value="Дата основания:"
+                                       rendered="#{cityViewBean.city.establishmentDate != null}"/>
+                        <h:outputText value="#{cityViewBean.city.establishmentDateString}"
+                                      rendered="#{cityViewBean.city.establishmentDate != null}"/>
+                        <h:outputText value="Не указана"
+                                      rendered="#{cityViewBean.city.establishmentDate == null}"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <!-- Статистика по губернатору -->
+                <p:panel header="Статистика по губернатору" style="margin-top: 20px;">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel value="Всего городов у этого губернатора:"/>
+                        <h:outputText value="#{cityViewBean.otherCitiesWithSameGovernor.size() + 1}"/>
+
+                        <h:outputLabel value="Другие города:"/>
+                        <h:outputText value="#{cityViewBean.hasOtherCitiesWithSameGovernor ? 'Есть' : 'Нет'}"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <div style="margin-top: 20px;">
+                    <p:button value="Редактировать"
+                              outcome="/cityForm.xhtml"
+                              icon="pi pi-pencil">
+                        <f:param name="id" value="#{cityViewBean.city.id}" />
+                    </p:button>
+                    <p:button value="Вернуться к списку"
+                              outcome="/cityTable.xhtml"
+                              styleClass="ui-button-secondary"
+                              style="margin-left: 10px;"/>
+                </div>
+            </h:panelGroup>
+
+            <!-- Когда город НЕ загружен -->
+            <h:panelGroup rendered="#{not cityViewBean.cityLoaded}">
+                <p:panel>
+                    <h:outputText value="Город не найден. ID: #{cityViewBean.cityId}"
+                                  style="color: red; font-weight: bold;"/>
+                    <br/>
+                    <p:button value="Вернуться к списку" outcome="/cityTable.xhtml" />
+                </p:panel>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>

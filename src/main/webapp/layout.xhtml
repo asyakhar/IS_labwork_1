@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>City Management System</title>
+    <h:outputStylesheet>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        }
+        .header {
+        background: #007ad9;
+        color: white;
+        padding: 15px;
+        font-size: 20px;
+        }
+        .menu {
+        margin: 10px;
+        }
+    </h:outputStylesheet>
+</h:head>
+<h:body>
+    <h:form>
+        <p:menubar>
+            <p:menuitem value="🏙 Города" outcome="/cityTable.xhtml"/>
+            <p:menuitem value="⚙️ Специальные операции" outcome="/special.xhtml"/>
+        </p:menubar>
+    </h:form>
+
+    <h:panelGroup layout="block" style="margin:20px">
+        <ui:insert name="content"/>
+    </h:panelGroup>
+</h:body>
+
+</html>
