@@ -64,7 +64,6 @@ public class City {
 
     public City() {}
 
-    // === Getters/Setters ===
     public Integer getId() { return id; }
 
     public String getName() { return name; }

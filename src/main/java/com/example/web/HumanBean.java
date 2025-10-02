@@ -22,14 +22,14 @@ public class HumanBean implements Serializable {
     public List<Human> getAllHumans() {
         try {
             List<Human> humans = humanDAO.findAll();
-            System.out.println("✅ Загружено губернаторов: " + humans.size());
+            System.out.println("Загружено губернаторов: " + humans.size());
             for (Human human : humans) {
                 System.out.println("   - " + human.getName() + " (ID: " + human.getId() + ")");
             }
             return humans;
         } catch (Exception e) {
-            System.err.println("❌ Ошибка при загрузке губернаторов: " + e.getMessage());
-            return List.of(); // возвращаем пустой список вместо null
+            System.err.println("Ошибка при загрузке губернаторов: " + e.getMessage());
+            return List.of();
         }
     }
     public void refreshHumans() {
@@ -42,9 +42,9 @@ public class HumanBean implements Serializable {
     public String createHuman() {
         try {
             humanDAO.create(newHuman);
-            allHumans = null; // Сбросить кэш
-            newHuman = new Human(); // Сбросить форму
-            return null; // Остаться на той же странице
+            allHumans = null;
+            newHuman = new Human();
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

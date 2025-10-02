@@ -29,10 +29,7 @@ public class CityTableBean implements Serializable {
                 @Override
                 public List<City> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
                     try {
-                        // Получаем данные с фильтрацией и сортировкой
                         List<City> result = cityDAO.findLazy(first, pageSize, sortBy, filterBy);
-
-                        // Устанавливаем общее количество записей для пагинации
                         int count = cityDAO.count(filterBy);
                         this.setRowCount(count);
 

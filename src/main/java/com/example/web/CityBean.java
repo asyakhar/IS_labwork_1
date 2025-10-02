@@ -106,9 +106,6 @@ public class CityBean implements Serializable {
 
     public String saveCity() {
         try {
-            System.out.println("=== НАЧАЛО СОХРАНЕНИЯ ГОРОДА ===");
-
-            // 🔥 ВАЖНО: ВСЯ логика в одной транзакции
 
             // Обработка губернатора
             if (createNewGovernor) {
@@ -117,12 +114,11 @@ public class CityBean implements Serializable {
                             new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка", "Имя губернатора обязательно"));
                     return null;
                 }
-                // 🔥 НЕ сохраняем губернатора здесь - только устанавливаем связь
                 selectedCity.setGovernor(newGovernor);
-                System.out.println("✅ Новый губернатор подготовлен: " + newGovernor.getName());
+                System.out.println("Новый губернатор подготовлен: " + newGovernor.getName());
 
             } else {
-                // Использовать существующего губернатора
+
                 if (selectedGovernorId != null) {
                     Human existingGovernor = humanDAO.find(selectedGovernorId);
                     if (existingGovernor == null) {
@@ -131,7 +127,7 @@ public class CityBean implements Serializable {
                         return null;
                     }
                     selectedCity.setGovernor(existingGovernor);
-                    System.out.println("✅ Использован существующий губернатор ID: " + existingGovernor.getId() + ", Имя: " + existingGovernor.getName());
+                    System.out.println("Использован существующий губернатор ID: " + existingGovernor.getId() + ", Имя: " + existingGovernor.getName());
                 } else {
                     FacesContext.getCurrentInstance().addMessage(null,
                             new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка", "Выберите губернатора"));
@@ -170,21 +166,19 @@ public class CityBean implements Serializable {
                 return null;
             }
 
-            // Отладочная информация
             System.out.println("Сохранение города: " + selectedCity.getName());
             System.out.println("Губернатор ID: " + (selectedCity.getGovernor() != null ? selectedCity.getGovernor().getId() : "null"));
             System.out.println("Координаты: (" + selectedCity.getCoordinates().getX() + ", " + selectedCity.getCoordinates().getY() + ")");
 
-            // 🔥 СОХРАНЕНИЕ ВСЕГО В ОДНОЙ ТРАНЗАКЦИИ
             if (selectedCity.getId() == null) {
-                // 🔥 ИСПОЛЬЗУЕМ СПЕЦИАЛЬНЫЙ МЕТОД ДЛЯ СОЗДАНИЯ ГОРОДА
+
                 cityDAO.createCityWithRelations(selectedCity);
-                System.out.println("✅ Город и губернатор сохранены в одной транзакции");
+                System.out.println("Город и губернатор сохранены в одной транзакции");
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Успех", "Город успешно создан"));
             } else {
                 cityDAO.update(selectedCity);
-                System.out.println("✅ Город обновлен ID: " + selectedCity.getId());
+                System.out.println("Город обновлен ID: " + selectedCity.getId());
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Успех", "Город успешно обновлен"));
             }
@@ -193,9 +187,9 @@ public class CityBean implements Serializable {
             return "cityTable?faces-redirect=true";
 
         } catch (Exception e) {
-            System.err.println("❌ Ошибка при сохранении города: " + e.getMessage());
+            System.err.println("Ошибка при сохранении города: " + e.getMessage());
             e.printStackTrace();
-            // 🔥 Губернатор НЕ сохранился, т.к. транзакция откатилась
+
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка", "Не удалось сохранить город: " + e.getMessage()));
             return null;
@@ -207,7 +201,7 @@ public class CityBean implements Serializable {
         selectedGovernorId = null;
         newGovernor = new Human();
         createNewGovernor = true;
-        cities = null; // Сбросить кэш
+        cities = null;
     }
 
     public String newCity() {

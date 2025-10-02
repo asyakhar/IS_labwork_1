@@ -22,7 +22,7 @@ public class CityViewBean implements Serializable {
     private CityDAO cityDAO;
 
     private City city;
-    private Integer cityId; // ИЗМЕНИТЕ Long на Integer
+    private Integer cityId;
 
     @PostConstruct
     public void init() {
@@ -35,7 +35,7 @@ public class CityViewBean implements Serializable {
 
         if (idParam != null && !idParam.trim().isEmpty()) {
             try {
-                this.cityId = Integer.parseInt(idParam); // ИЗМЕНИТЕ Long.parseLong на Integer.parseInt
+                this.cityId = Integer.parseInt(idParam);
                 loadCity();
             } catch (NumberFormatException e) {
                 System.err.println("Invalid ID format: " + idParam);
@@ -64,7 +64,7 @@ public class CityViewBean implements Serializable {
         return cityId;
     }
 
-    public void setCityId(Integer cityId) { // ИЗМЕНИТЕ параметр
+    public void setCityId(Integer cityId) {
         this.cityId = cityId;
         loadCity();
     }
@@ -97,7 +97,6 @@ public class CityViewBean implements Serializable {
                 city.getGovernor().getBirthday() == null) {
             return 0;
         }
-        // Простой расчет возраста
         Calendar birth = Calendar.getInstance();
         birth.setTime(city.getGovernor().getBirthday());
         Calendar now = Calendar.getInstance();

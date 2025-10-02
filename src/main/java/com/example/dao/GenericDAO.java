@@ -61,45 +61,34 @@ public abstract class GenericDAO<T> {
         this.entityClass = entityClass;
     }
 
-//    public void create(T entity) {
-//        try {
-//            em.merge(entity);
-//            logger.info(() -> "✅ Entity " + entityClass.getSimpleName() + " сохранён: " + entity);
-//        } catch (Exception e) {
-//            logger.severe(() -> "❌ Ошибка при сохранении " + entityClass.getSimpleName() + ": " + e.getMessage());
-//            throw e;
-//        }
-//    }
 public void create(T entity) {
     try {
-        logger.info(() -> "💾 Создание " + entityClass.getSimpleName());
+        logger.info(() -> "Создание " + entityClass.getSimpleName());
 
-        // Используем persist для каскадирования
         em.persist(entity);
         em.flush();
 
-        // 🔥 ИСПРАВЛЕННЫЙ МЕТОД ПОЛУЧЕНИЯ ID
         Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
-        logger.info(() -> "✅ Успешно создано " + entityClass.getSimpleName() + " с id=" + id);
+        logger.info(() -> "Успешно создано " + entityClass.getSimpleName() + " с id=" + id);
     } catch (Exception e) {
-        // 🔥 ИСПРАВЛЕННЫЙ ЛОГГИНГ ОШИБОК
-        logger.severe("❌ Ошибка при создании " + entityClass.getSimpleName() + ": " + e.getMessage());
+
+        logger.severe("Ошибка при создании " + entityClass.getSimpleName() + ": " + e.getMessage());
         throw new RuntimeException(e);
     }
 }
 
     public T find(Object id) {
-        logger.info(() -> "🔍 Поиск " + entityClass.getSimpleName() + " по id=" + id);
+        logger.info(() -> "Поиск " + entityClass.getSimpleName() + " по id=" + id);
         return em.find(entityClass, id);
     }
 
     public T update(T entity) {
         try {
             T merged = em.merge(entity);
-            logger.info(() -> "♻️ Entity " + entityClass.getSimpleName() + " обновлён: " + merged);
+            logger.info(() -> "Entity " + entityClass.getSimpleName() + " обновлён: " + merged);
             return merged;
         } catch (Exception e) {
-            logger.severe(() -> "❌ Ошибка при обновлении " + entityClass.getSimpleName() + ": " + e.getMessage());
+            logger.severe(() -> "Ошибка при обновлении " + entityClass.getSimpleName() + ": " + e.getMessage());
             throw e;
         }
     }
@@ -107,9 +96,9 @@ public void create(T entity) {
     public void delete(T entity) {
         try {
             em.remove(em.merge(entity));
-            logger.info(() -> "🗑 Удалён " + entityClass.getSimpleName() + ": " + entity);
+            logger.info(() -> "Удалён " + entityClass.getSimpleName() + ": " + entity);
         } catch (Exception e) {
-            logger.severe(() -> "❌ Ошибка при удалении " + entityClass.getSimpleName() + ": " + e.getMessage());
+            logger.severe(() -> "Ошибка при удалении " + entityClass.getSimpleName() + ": " + e.getMessage());
             throw e;
         }
     }
@@ -119,12 +108,12 @@ public void create(T entity) {
         if (entity != null) {
             delete(entity);
         } else {
-            logger.warning(() -> "⚠️ Не найден " + entityClass.getSimpleName() + " для удаления id=" + id);
+            logger.warning(() -> "Не найден " + entityClass.getSimpleName() + " для удаления id=" + id);
         }
     }
 
     public List<T> findAll() {
-        logger.info(() -> "📄 Получение всех записей " + entityClass.getSimpleName());
+        logger.info(() -> "Получение всех записей " + entityClass.getSimpleName());
         return em.createQuery("SELECT e FROM " + entityClass.getSimpleName() + " e", entityClass)
                 .getResultList();
     }
